@@ -1,82 +1,79 @@
-const User = require("../../models/User");
+const { User } = require("../../models");
 
 const login = async (req, res) => {
-	ry {
-		 get the user data from payload
-		nst { emailAddress, password } = req.body;
+	try {
+		// get the user data from payload
+		const { emailAddress, password } = req.body;
 
-		 get user by email address
-		nst user = await User.findOne({ where: { emailAddress } });
+		// get user by email address
+		const user = await User.findOne({ where: { emailAddress } });
 
-		 (!user) {
-			sole.log(
-				ROR]: Failed to login | No user with email address of ${emailAddress}`
-			
+		if (!user) {
+			console.log(
+				`[ERROR]: Failed to login | No user with email address of ${emailAddress}`
+			);
 
-			urn res.status(401).json({ error: "Failed to login" });
-		
+			return res.status(401).json({ error: "Failed to login" });
+		}
 
-		nst isAuthorised = await user.checkPassword(password);
+		const isAuthorised = await user.checkPassword(password);
 
-		 (isAuthorised) {
-			urn res.json({ data: "hello" });
-		else {
-			urn res.status(401).json({ data: "get lost" });
-		
+		if (isAuthorised) {
+			return res.json({ data: "hello" });
+		} else {
+			return res.status(401).json({ data: "get lost" });
+		}
+	} catch (error) {
+		console.log(`[ERROR]: Failed to login | ${error.message}`);
 
-		turn res.json({ data: "hello" });
-	 catch (error) {
-		nsole.log(`[ERROR]: Failed to login | ${error.message}`);
-
-		turn res.status(500).json({ error: "Failed to login" });
-	
+		return res.status(500).json({ error: "Failed to login" });
+	}
 };
 
 const signup = async (req, res) => {
-	ry {
-		 get the user data from payload
-		nst {
-			stName,
-			tName,
-			rname,
-			ilAddress,
-			sword,
-			eOfBirth,
-			fileImageUrl,
-		= req.body;
+	try {
+		// get the user data from payload
+		const {
+			firstName,
+			lastName,
+			username,
+			emailAddress,
+			password,
+			dateOfBirth,
+			profileImageUrl,
+		} = req.body;
 
-		 check if user exists
-		nst user = await User.findOne({ where: { emailAddress } });
+		// check if user exists
+		const user = await User.findOne({ where: { emailAddress } });
 
-		 (user) {
-			sole.log(
-				ROR]: Failed to create user | Email address of ${emailAddress} already exists`
-			
+		if (user) {
+			console.log(
+				`[ERROR]: Failed to create user | Email address of ${emailAddress} already exists`
+			);
 
-			urn res.status(400).json({ error: "Failed to create user" });
-		
+			return res.status(400).json({ error: "Failed to create user" });
+		}
 
-		 create user
-		nst data = await User.create({
-			stName,
-			tName,
-			rname,
-			ilAddress,
-			sword,
-			eOfBirth,
-			fileImageUrl,
-		;
+		// create user
+		const data = await User.create({
+			firstName,
+			lastName,
+			username,
+			emailAddress,
+			password,
+			dateOfBirth,
+			profileImageUrl,
+		});
 
-		turn res.json({ data });
-	 catch (error) {
-		nsole.log(`[ERROR]: Failed to create user | ${error.message}`);
+		return res.json({ data });
+	} catch (error) {
+		console.log(`[ERROR]: Failed to create user | ${error.message}`);
 
-		turn res.status(500).json({ error: "Failed to create user" });
-	
+		return res.status(500).json({ error: "Failed to create user" });
+	}
 };
 
 module.exports = {
-	ogin,
-	ignup,
+	login,
+	signup,
 };
-
